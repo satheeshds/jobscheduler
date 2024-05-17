@@ -9,7 +9,7 @@ private:
     std::function<void()> func;
 
 public:
-    Runnable(std::function<void()> func);
+    explicit Runnable(std::function<void()> func);
     // virtual ~Runnable(){}; // Virtual destructor
     void run(); // Pure virtual function makes this class Abstract class
 };

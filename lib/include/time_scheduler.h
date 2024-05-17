@@ -12,12 +12,12 @@ private:
     cron::cronexpr expr;
 
 public:
-    TimeScheduler(const std::string& cron);
-    bool set_next_run(std::time_t from = std::time(0));
-    bool set_cron(const std::string& cron);
-    std::time_t get_next_run() const;
-    bool operator<(const TimeScheduler &rhs) const;
-    bool operator>(const TimeScheduler &rhs) const;
+    explicit TimeScheduler(const std::string &cron);
+    auto set_next_run(std::time_t from = std::time(nullptr)) -> bool;
+    auto set_cron(const std::string &cron) -> bool;
+    [[nodiscard]] auto get_next_run() const -> std::time_t;
+    auto operator<(const TimeScheduler &rhs) const -> bool;
+    auto operator>(const TimeScheduler &rhs) const -> bool;
 };
 
 #endif // TIMESCHEDULER_H

@@ -14,10 +14,10 @@ private:
     std::string cron;
 
 public:
-    Job(int id, const std::string &cron, const std::function<void(int)> &func);
-    auto get_id() const -> int;
+    Job(int job_id, const std::string &cron, const std::function<void(int)> &func);
+    [[nodiscard]] auto get_id() const -> int;
     void set_cron(const std::string &cron);
-    friend std::ostream &operator<<(std::ostream &os, Job &job);
+    friend auto operator<<(std::ostream &ostream, Job &job) -> std::ostream &;
 };
 
 #endif // JOB_H
