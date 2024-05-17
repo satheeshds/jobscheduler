@@ -27,20 +27,11 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(croncpp)
 
-# Get all the .cpp files in the src directory
-file(GLOB SRC_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp)
+add_subdirectory(lib)
 
-# If you have other .cpp files, list them here
-add_executable(${PROJECT_NAME} ${SRC_FILES})
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${croncpp_SOURCE_DIR}/include)
-
-# Add the include directory to the include path
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
-
+add_subdirectory(examples)
 
 add_custom_target(tidy
-        COMMAND clang-tidy -p ${CMAKE_BINARY_DIR} ${SRC_FILES} -- -I${CMAKE_SOURCE_DIR}/include -I${croncpp_SOURCE_DIR}/include
-        # DEPENDS ${SRC_FILES} ${HEADER_FILES}
+        DEPENDS tidy_lib tidy_examples
         COMMENT "Running clang-tidy"
         )
