@@ -1,99 +1,110 @@
+#include <cstdint>
+#include <stdexcept>
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <thread>
+#include "minheap.h"
+#include <functional>
+#include "job.h"
 
-template <typename T>
-class MinHeap
+void MinHeap::heapify_up(size_t index) // NOLINT
 {
-private:
-    std::vector<T> heap;
-
-    void heapify_up(int i)
+    if ((index != 0) && heap[parent(index)] > heap[index])
     {
-        if (i && heap[parent(i)] > heap[i])
-        {
-            std::swap(heap[i], heap[parent(i)]);
-            heapify_up(parent(i));
-        }
+        std::swap(heap[index], heap[parent(index)]);
+        heapify_up(parent(index));
+    }
+}
+
+void MinHeap::heapify_down(size_t index) // NOLINT
+{
+    size_t const left = left_child(index);
+    size_t const right = right_child(index);
+    size_t smallest = index;
+
+    if (left < size() && heap[left] < heap[index])
+    {
+        smallest = left;
     }
 
-    void heapify_down(int i)
+    if (right < size() && heap[right] < heap[smallest])
     {
-        int left = left_child(i);
-        int right = right_child(i);
-        int smallest = i;
-
-        if (left < size() && heap[left] < heap[i])
-            smallest = left;
-
-        if (right < size() && heap[right] < heap[smallest])
-            smallest = right;
-
-        if (smallest != i)
-        {
-            std::swap(heap[i], heap[smallest]);
-            heapify_down(smallest);
-        }
+        smallest = right;
     }
 
-    int parent(int i) { return (i - 1) / 2; }
-    int left_child(int i) { return (2 * i + 1); }
-    int right_child(int i) { return (2 * i + 2); }
-
-public:
-    unsigned int size() { return heap.size(); }
-    bool empty() { return size() == 0; }
-
-    void push(T key)
+    if (smallest != index)
     {
-        heap.push_back(key);
-        int index = size() - 1;
-        heapify_up(index);
+        std::swap(heap[index], heap[smallest]);
+        heapify_down(smallest);
+    }
+}
+
+auto MinHeap::parent(size_t index) -> size_t { return (index - 1) / 2; }
+auto MinHeap::left_child(size_t index) -> size_t { return (2 * index + 1); }
+auto MinHeap::right_child(size_t index) -> size_t { return (2 * index + 2); }
+
+auto MinHeap::size() -> size_t
+{
+    return heap.size();
+}
+auto MinHeap::empty() -> bool { return size() == 0; }
+
+void MinHeap::push(const Job &key)
+{
+    heap.push_back(key);
+    uint64_t const index = size() - 1;
+    heapify_up(index);
+}
+
+void MinHeap::pop()
+{
+    if (size() == 0)
+    {
+        throw std::out_of_range("Heap is empty");
     }
 
-    void pop()
+    heap[0] = heap.back();
+    heap.pop_back();
+
+    heapify_down(0);
+}
+
+auto MinHeap::top() -> Job
+{
+    if (size() == 0)
     {
-        if (size() == 0)
-            throw std::out_of_range("Heap is empty");
-
-        heap[0] = heap.back();
-        heap.pop_back();
-
-        heapify_down(0);
+        throw std::out_of_range("Heap is empty");
     }
 
-    T top()
-    {
-        if (size() == 0)
-            throw std::out_of_range("Heap is empty");
+    return heap.front();
+}
 
-        return heap.front();
+// template <typename Predicate>
+auto MinHeap::extract(const std::function<bool(Job)> &pred) -> Job
+{
+    auto iterator = std::find_if(heap.begin(), heap.end(), pred);
+    if (iterator == heap.end())
+    {
+        throw std::out_of_range("Element not found");
     }
 
-    template <typename Predicate>
-    T extract(Predicate pred)
+    std::swap(*iterator, heap.back());
+    Job value = heap.back();
+    heap.pop_back();
+    if (heap.size() > 1 && iterator != heap.end())
     {
-        auto it = std::find_if(heap.begin(), heap.end(), pred);
-        if (it == heap.end())
-            throw std::out_of_range("Element not found");
-
-        std::swap(*it, heap.back());
-        T value = heap.back();
-        heap.pop_back();
-        if (heap.size() > 1 && it != heap.end())
-            heapify_down(it - heap.begin());
-        // T value = *it;
-        // heap.erase(it);
-        return value;
+        heapify_down(iterator - heap.begin());
     }
+    // T value = *it;
+    // heap.erase(it);
+    return value;
+}
 
-    void List()
+void MinHeap::print()
+{
+    for (auto item : heap)
     {
-        for (auto i : heap)
-        {
-            std::cout << i << std::endl;
-        }
-        std::cout << std::endl;
+        std::cout << item << '\n';
     }
-};
+    std::cout << '\n';
+}

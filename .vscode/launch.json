@@ -5,7 +5,7 @@
             "name": "(lldb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/JobHeap",
+            "program": "${workspaceFolder}/bin/JobHeap",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
