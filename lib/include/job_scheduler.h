@@ -29,8 +29,8 @@ public:
     explicit JobScheduler(unsigned int idle_wait_time = IDLE_WAIT_TIME_SECONDS);
     ~JobScheduler() = default;
     auto run() -> std::thread;
-    auto add_job(const Job &job) -> void;
-    auto extract_job(unsigned int job_id) -> Job;
+    auto add_job(Job *job) -> void;
+    auto extract_job(unsigned int job_id) -> Job *;
     auto print() -> void;
     auto exit() -> void;
 };

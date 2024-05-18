@@ -30,43 +30,35 @@ void MinHeap::heapify_up(Node *node) // NOLINT
 
 void MinHeap::heapify_down(Node *node) // NOLINT
 {
-    Node const *left = node->left_child();
-    size_t const *right = right_child(index);
-    size_t smallest = index;
+    Node *left = node->left_child();
+    Node *right = node->right_child();
+    Node *smallest = node;
 
-    if (left < size() && heap[left] < heap[index])
+    if (left != nullptr && left < node)
     {
         smallest = left;
     }
 
-    if (right < size() && heap[right] < heap[smallest])
+    if (right != nullptr && right < smallest)
     {
         smallest = right;
     }
 
-    if (smallest != index)
+    if (smallest != node)
     {
-        std::swap(heap[index], heap[smallest]);
+        swapJobs(node, smallest);
         heapify_down(smallest);
     }
 }
 
-auto MinHeap::parent(size_t index) -> size_t { return (index - 1) / 2; }
-auto MinHeap::left_child(size_t index) -> size_t { return (2 * index + 1); }
-auto MinHeap::right_child(size_t index) -> size_t { return (2 * index + 2); }
 
-auto MinHeap::size() -> size_t
-{
-    return heap.size();
-}
-auto MinHeap::empty() -> bool { return size() == 0; }
+auto MinHeap::empty() -> bool { return root == nullptr; }
 
 void MinHeap::push(Node *node)
 {
     if (root == nullptr)
     {
         root = node;
-        tail = node;
         return;
     }
 
@@ -99,42 +91,81 @@ void MinHeap::pop()
     heapify_down(root);
 }
 
-auto MinHeap::top() -> Job
+auto MinHeap::top() -> Node *
 {
-    if (size() == 0)
+    if (empty())
     {
         throw std::out_of_range("Heap is empty");
     }
 
-    return heap.front();
+    return root;
 }
 
 // template <typename Predicate>
-auto MinHeap::extract(const std::function<bool(Job)> &pred) -> Job
-{
-    auto iterator = std::find_if(heap.begin(), heap.end(), pred);
-    if (iterator == heap.end())
+auto MinHeap::extract(const std::function<bool(Node *)> &pred) -> Node *
+{   
+    if(empty())
+    {
+        throw std::out_of_range("Heap is empty");
+    }
+
+    Node *node = nullptr;
+    std::queue<Node *> queue;
+    queue.push(root);
+    while (!queue.empty())
+    {
+        Node *current = queue.front();
+        queue.pop();
+        if (current == nullptr)
+        {
+            continue;
+        }
+        if (pred(current))
+        {
+            node = current;
+            break;
+        }
+        queue.push(current->left_child());
+        queue.push(current->right_child());
+    }
+
+    if (node == nullptr)
     {
         throw std::out_of_range("Element not found");
     }
-
-    std::swap(*iterator, heap.back());
-    Job value = heap.back();
-    heap.pop_back();
-    if (heap.size() > 1 && iterator != heap.end())
+    
+    auto *lastNode = last();
+    if (lastNode->left_child() != nullptr)
     {
-        heapify_down(iterator - heap.begin());
+        lastNode = lastNode->left_child();
     }
-    // T value = *it;
-    // heap.erase(it);
-    return value;
+    else if (lastNode->right_child() != nullptr)
+    {
+        lastNode = lastNode->right_child();
+    }
+
+    lastNode->parent(root)->remove_child(lastNode);
+    node->set_job(lastNode->get_job());
+    heapify_down(node);
+
+    return node;
 }
 
 void MinHeap::print()
 {
-    for (auto item : heap)
+    std::queue<Node *> queue;
+    queue.push(root);
+    while (!queue.empty())
     {
-        std::cout << item << '\n';
+        Node *current = queue.front();
+        queue.pop();
+        if (current == nullptr)
+        {
+            continue;
+        }
+        std::cout << current->get_job() << '\n';
+        queue.push(current->left_child());
+        queue.push(current->right_child());
     }
     std::cout << '\n';
 }
@@ -154,6 +185,11 @@ auto MinHeap::last() -> Node *
         Node *current = queue.front();
         queue.pop();
 
+        if(current == nullptr)
+        {
+            continue;
+        }
+
         if (current->left_child() == nullptr || current->right_child() == nullptr)
         {
             last = current;
@@ -172,3 +208,5 @@ auto swapJobs(Node *first, Node *second) -> void
     first->set_job(second->get_job());
     second->set_job(temp);
 }
+
+

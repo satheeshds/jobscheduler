@@ -6,6 +6,7 @@ set(PROJECT_NAME JobHeap)
 project(${PROJECT_NAME})
 
 message(STATUS "C++ compiler ID: ${CMAKE_CXX_COMPILER_ID}")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Set the output directory for the binary
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)

@@ -33,16 +33,17 @@ auto JobScheduler::run() -> std::thread
                                }
 
                                // log_file << "Current time: " << current_time() << '\n';
-                               Job current_job = job_heap.top();
-                               if (current_job.get_next_run() <= time(nullptr))
+                               Node *current_top = job_heap.top();
+                               Job *current_job = current_top->get_job();
+                               if (current_job->get_next_run() <= time(nullptr))
                                {
                                    job_heap.pop();
                                    // log_file << "Running job : " << current_job << '\n';
-                                   current_job.run();
+                                   current_job->run();
 
-                                   if (current_job.set_next_run())
+                                   if (current_job->set_next_run())
                                    {
-                                       job_heap.push(current_job);
+                                       job_heap.push(current_top);
                                    }
                                }
 
@@ -51,8 +52,8 @@ auto JobScheduler::run() -> std::thread
                                    continue;
                                }
 
-                               Job const next_job = job_heap.top();
-                               auto next_run_time = next_job.get_next_run() - time(nullptr);
+                               Job const *next_job = job_heap.top()->get_job();
+                               auto next_run_time = next_job->get_next_run() - time(nullptr);
                                awake = false;
                                condition_variable.wait_for(lock, std::chrono::seconds(next_run_time), [this]()
                                                            { return awake.load(); });
@@ -68,10 +69,10 @@ auto JobScheduler::wake_up() -> void
     condition_variable.notify_all();
 }
 
-auto JobScheduler::add_job(const Job &job) -> void
+auto JobScheduler::add_job(Job *job) -> void
 {
     mtx.lock();
-    job_heap.push(job);
+    job_heap.push(new Node(job));
     mtx.unlock();
     wake_up();
 }
@@ -86,23 +87,24 @@ auto JobScheduler::print() -> void
     job_heap.print();
 }
 
-auto JobScheduler::extract_job(unsigned int job_id) -> Job
+auto JobScheduler::extract_job(unsigned int job_id) -> Job *
 {
     if (job_heap.empty())
     {
         throw std::out_of_range("Heap is empty");
     }
-    auto current_top = job_heap.top();
-    auto pred = [job_id](const Job &job)
-    { return job.get_id() == job_id; };
+    auto *current_top = job_heap.top();
+
+    auto pred = [job_id](Node *node)
+    { return node->get_job()->get_id() == job_id; };
     mtx.lock();
-    auto job = job_heap.extract(pred);
+    auto *node = job_heap.extract(pred);
     mtx.unlock();
-    if (job.get_id() == current_top.get_id())
+    if (node == current_top)
     {
         wake_up();
     }
-    return job;
+    return node->get_job();
 }
 
 auto JobScheduler::exit() -> void

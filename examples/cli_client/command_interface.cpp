@@ -70,10 +70,11 @@ auto command_interface::add_job() -> void
     std::cout << "Enter job cron: ";
     std::getline(std::cin, cron);
 
-    Job const job(job_id, cron, [](int job_id)
-                  { std::cout << "Job with id: " << job_id << " ran on thread id: " << std::this_thread::get_id() << '\n';
-              std::cout << "sleepingfor: " << job_id << " seconds" << '\n';
-              std::this_thread::sleep_for(std::chrono::seconds(job_id)); });
+    auto *job = new Job(job_id, cron, [](int job_id)
+                     { std::cout << "Job with id: " << job_id << " ran on thread id: " << std::this_thread::get_id() << '\n';
+                 std::cout << "sleepingfor: " << job_id << " seconds" << '\n';
+                 std::this_thread::sleep_for(std::chrono::seconds(job_id)); });
+
     job_schd->add_job(job);
 }
 
@@ -120,9 +121,9 @@ auto command_interface::edit_job() -> void
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // ignore leftover '\n'
     std::cout << "Enter new cron: ";
     std::getline(std::cin, cron);
-    auto job = job_schd->extract_job(job_id);
-    job.set_cron(cron);
-    job.set_next_run();
+    auto *job = job_schd->extract_job(job_id);
+    job->set_cron(cron);
+    job->set_next_run();
     job_schd->add_job(job);
 }
 
@@ -134,8 +135,8 @@ auto command_interface::run_job() -> void
         return;
     }
     auto job_id = job_opt.value();
-    auto job = job_schd->extract_job(job_id);
-    job.set_next_run(job.get_next_run());
+    auto *job = job_schd->extract_job(job_id);
+    job->set_next_run(job->get_next_run());
     job_schd->add_job(job);
 }
 

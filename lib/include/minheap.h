@@ -11,14 +11,9 @@ class MinHeap
 {
 private:
     Node *root{nullptr};
-    Node *tail{nullptr};
 
     void heapify_up(Node *node);
     void heapify_down(Node *node);
-    static auto parent(size_t index) -> size_t;
-    static auto left_child(size_t index) -> size_t;
-    static auto right_child(size_t index) -> size_t;
-    auto size() -> size_t;
     auto last() -> Node *;
 
 public:
@@ -28,7 +23,7 @@ public:
     auto empty() -> bool;
     void print();
     // template <typename Predicate>
-    auto extract(const std::function<bool(Node)> &pred) -> Node *;
+    auto extract(const std::function<bool(Node *)> &pred) -> Node *;
 };
 
 #endif // MINHEAP_H
