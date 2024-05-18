@@ -1,0 +1,12 @@
+{
+  "build": { "dockerfile": "Dockerfile" },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "CS128.cs128-clang-tidy",
+        "ms-vscode.cpptools-extension-pack"
+      ]
+    }
+  }
+}
