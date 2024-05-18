@@ -3,31 +3,32 @@
 #define MINHEAP_H
 
 #include <cstddef>
-#include <vector>
 #include <functional>
-#include "job.h"
+#include "node.h"
 
 // template <typename T>
 class MinHeap
 {
 private:
-    std::vector<Job> heap;
+    Node *root{nullptr};
+    Node *tail{nullptr};
 
-    void heapify_up(size_t index);
-    void heapify_down(size_t index);
+    void heapify_up(Node *node);
+    void heapify_down(Node *node);
     static auto parent(size_t index) -> size_t;
     static auto left_child(size_t index) -> size_t;
     static auto right_child(size_t index) -> size_t;
     auto size() -> size_t;
+    auto last() -> Node *;
 
 public:
-    void push(const Job &key);
+    void push(Node *node);
     void pop();
-    auto top() -> Job;
+    auto top() -> Node *;
     auto empty() -> bool;
     void print();
     // template <typename Predicate>
-    auto extract(const std::function<bool(Job)> &pred) -> Job;
+    auto extract(const std::function<bool(Node)> &pred) -> Node *;
 };
 
 #endif // MINHEAP_H

@@ -5,21 +5,33 @@
 #include <iostream>
 #include "minheap.h"
 #include <functional>
+#include <queue>
 #include "job.h"
 
-void MinHeap::heapify_up(size_t index) // NOLINT
+auto swapJobs(Node *first, Node *second) -> void;
+void MinHeap::heapify_up(Node *node) // NOLINT
 {
-    if ((index != 0) && heap[parent(index)] > heap[index])
+    if (node == nullptr)
     {
-        std::swap(heap[index], heap[parent(index)]);
-        heapify_up(parent(index));
+        return;
+    }
+    auto *parent = node->parent(root);
+    if (parent == nullptr)
+    {
+        return;
+    }
+
+    if (parent > node)
+    {
+        swapJobs(parent, node);
+        heapify_up(parent);
     }
 }
 
-void MinHeap::heapify_down(size_t index) // NOLINT
+void MinHeap::heapify_down(Node *node) // NOLINT
 {
-    size_t const left = left_child(index);
-    size_t const right = right_child(index);
+    Node const *left = node->left_child();
+    size_t const *right = right_child(index);
     size_t smallest = index;
 
     if (left < size() && heap[left] < heap[index])
@@ -49,24 +61,42 @@ auto MinHeap::size() -> size_t
 }
 auto MinHeap::empty() -> bool { return size() == 0; }
 
-void MinHeap::push(const Job &key)
+void MinHeap::push(Node *node)
 {
-    heap.push_back(key);
-    uint64_t const index = size() - 1;
-    heapify_up(index);
+    if (root == nullptr)
+    {
+        root = node;
+        tail = node;
+        return;
+    }
+
+    last()->set_child(node);
+
+    heapify_up(node);
 }
 
 void MinHeap::pop()
 {
-    if (size() == 0)
+    if (root == nullptr)
     {
-        throw std::out_of_range("Heap is empty");
+        return;
     }
 
-    heap[0] = heap.back();
-    heap.pop_back();
+    auto *lastNode = last();
+    if (lastNode->left_child() != nullptr)
+    {
+        lastNode = lastNode->left_child();
+    }
+    else if (lastNode->right_child() != nullptr)
+    {
+        lastNode = lastNode->right_child();
+    }
 
-    heapify_down(0);
+    lastNode->parent(root)->remove_child(lastNode);
+
+    root->set_job(lastNode->get_job());
+
+    heapify_down(root);
 }
 
 auto MinHeap::top() -> Job
@@ -107,4 +137,38 @@ void MinHeap::print()
         std::cout << item << '\n';
     }
     std::cout << '\n';
+}
+
+auto MinHeap::last() -> Node *
+{
+    if (root == nullptr)
+    {
+        return nullptr;
+    }
+
+    std::queue<Node *> queue;
+    queue.push(root);
+    Node *last = nullptr;
+    while (!queue.empty())
+    {
+        Node *current = queue.front();
+        queue.pop();
+
+        if (current->left_child() == nullptr || current->right_child() == nullptr)
+        {
+            last = current;
+            break;
+        }
+
+        queue.push(current->left_child());
+        queue.push(current->right_child());
+    }
+    return last;
+}
+
+auto swapJobs(Node *first, Node *second) -> void
+{
+    Job *temp = first->get_job();
+    first->set_job(second->get_job());
+    second->set_job(temp);
 }
