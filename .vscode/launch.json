@@ -2,16 +2,35 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(lldb) Launch",
+            "name": "(lldb) program Launch",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/JobHeap",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${worksapceFolder}",
             "environment": [],
             "externalConsole": true,
             "MIMode": "lldb",
+        },
+        {
+            "name":"(lldb) test Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/test",
+            "args": ["--gtest_filter=NodeTest.SetChildTest"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for lldb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         },
         {
             "name": "CMake Debug",

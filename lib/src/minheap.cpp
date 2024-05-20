@@ -1,12 +1,10 @@
-#include <cstdint>
 #include <stdexcept>
-#include <vector>
-#include <algorithm>
 #include <iostream>
 #include "minheap.h"
 #include <functional>
 #include <queue>
 #include "job.h"
+#include "node.h"
 
 auto swapJobs(Node *first, Node *second) -> void;
 void MinHeap::heapify_up(Node *node) // NOLINT
@@ -50,7 +48,6 @@ void MinHeap::heapify_down(Node *node) // NOLINT
         heapify_down(smallest);
     }
 }
-
 
 auto MinHeap::empty() -> bool { return root == nullptr; }
 
@@ -103,8 +100,8 @@ auto MinHeap::top() -> Node *
 
 // template <typename Predicate>
 auto MinHeap::extract(const std::function<bool(Node *)> &pred) -> Node *
-{   
-    if(empty())
+{
+    if (empty())
     {
         throw std::out_of_range("Heap is empty");
     }
@@ -133,7 +130,7 @@ auto MinHeap::extract(const std::function<bool(Node *)> &pred) -> Node *
     {
         throw std::out_of_range("Element not found");
     }
-    
+
     auto *lastNode = last();
     if (lastNode->left_child() != nullptr)
     {
@@ -185,7 +182,7 @@ auto MinHeap::last() -> Node *
         Node *current = queue.front();
         queue.pop();
 
-        if(current == nullptr)
+        if (current == nullptr)
         {
             continue;
         }
@@ -208,5 +205,3 @@ auto swapJobs(Node *first, Node *second) -> void
     first->set_job(second->get_job());
     second->set_job(temp);
 }
-
-

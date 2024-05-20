@@ -11,9 +11,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Set the output directory for the binary
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 
 include(FetchContent)
 
@@ -22,12 +22,13 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/mariusbancila/croncpp.git
         GIT_TAG        v2023.03.30
         )
-
 FetchContent_MakeAvailable(croncpp)
 
 add_subdirectory(lib)
 
 add_subdirectory(examples)
+
+add_subdirectory(tests)
 
 add_custom_target(tidy
         DEPENDS tidy_lib tidy_examples

@@ -1,5 +1,6 @@
 
-message(STATUS "croncpp sourc dir: ${croncpp_SOURCE_DIR}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE ON)
 # Get all the .cpp and .h files in the src and include directory
 file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 

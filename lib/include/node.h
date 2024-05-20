@@ -7,64 +7,29 @@ class Node
 {
 private:
     /* data */
-    Job *job;
+    Job *job{};
     Node *left{nullptr};
     Node *right{nullptr};
 
 public:
     explicit Node(Job *job) : job(job) {}
-    ~Node()
-    {
-        delete left;
-        delete right;
-    }
+    Node() = default;
+    ~Node() = default;
 
     auto left_child() -> Node * { return left; }
     auto right_child() -> Node * { return right; }
     auto get_job() -> Job * { return job; }
     auto set_job(Job *job) -> void { this->job = job; }
-    auto set_child(Node *node) -> bool
-    {
-        if (left == nullptr)
-        {
-            left = node;
-        }
-        else if (right == nullptr)
-        {
-            right = node;
-        }
-    }
-    auto remove_child(Node *node) -> bool
-    {
-        if (left == node)
-        {
-            left = nullptr;
-            return true;
-        }
-        if (right == node)
-        {
-            right = nullptr;
-            return true;
-        }
-        return false;
-    }
+    auto set_child(Node *node) -> bool;
 
-    auto parent(Node *root) -> Node * // NOLINT
-    {
-        if (root == nullptr)
-        {
-            return nullptr;
-        }
-        if (root->left == this || root->right == this)
-        {
-            return root;
-        }
-        auto *left = parent(root->left);
-        auto *right = parent(root->right);
-        return (left != nullptr) ? left : right;
-    }
+    auto remove_child(Node *node) -> bool;
 
-    auto operator>(const Node &node) -> bool { return job > node.job; }
+    auto parent(Node *root) -> Node *; // NOLINT
+
+    auto operator>(const Node &node) -> bool
+    {
+        return job > node.job;
+    }
     auto operator<(const Node &node) -> bool { return job < node.job; }
 
     // delete copy constructor and copy assignment operator
