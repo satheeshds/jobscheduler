@@ -26,11 +26,9 @@ public:
 
     auto parent(Node *root) -> Node *; // NOLINT
 
-    auto operator>(const Node &node) -> bool
-    {
-        return job > node.job;
-    }
-    auto operator<(const Node &node) -> bool { return job < node.job; }
+    auto operator>(const Node &node) -> bool;
+
+    auto operator<(const Node &node) -> bool;
 
     // delete copy constructor and copy assignment operator
     Node(const Node &) = delete;

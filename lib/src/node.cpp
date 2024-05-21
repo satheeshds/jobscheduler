@@ -44,3 +44,12 @@ auto Node::parent(Node *root) -> Node * // NOLINT
     auto *right = parent(root->right);
     return (left != nullptr) ? left : right;
 }
+auto Node::operator>(const Node &node) -> bool
+{
+    return job->operator>(*node.job);
+}
+
+auto Node::operator<(const Node &node) -> bool
+{
+    return job->operator<(*node.job);
+}

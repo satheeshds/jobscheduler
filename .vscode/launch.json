@@ -18,7 +18,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/test",
-            "args": ["--gtest_filter=NodeTest.SetChildTest"],
+            "args": ["--gtest_filter=NodeTest.*"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

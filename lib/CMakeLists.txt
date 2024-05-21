@@ -14,3 +14,12 @@ add_custom_target(tidy_lib
     COMMAND clang-tidy -p ${CMAKE_BINARY_DIR} ${SRC_FILES} -- -I${croncpp_SOURCE_DIR}/include -I${CMAKE_CURRENT_SOURCE_DIR}/include
     COMMENT "Running clang-tidy on the library source files"
 )
+
+add_custom_target(clean-cov
+    COMMAND find ${CMAKE_CURRENT_BINARY_DIR} -type f -name "*.gcda" -delete
+    COMMAND find ${CMAKE_CURRENT_BINARY_DIR} -type f -name "*.gcno" -delete
+    COMMENT "Cleaning up gcov files"
+)
+
+set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${CMAKE_CURRENT_BINARY_DIR}/*.gcda;${CMAKE_CURRENT_BINARY_DIR}/*.gcno")
+
