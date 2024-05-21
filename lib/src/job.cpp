@@ -18,6 +18,6 @@ void Job::set_cron(const std::string &cron)
 }
 auto operator<<(std::ostream &ostream, Job &job) -> std::ostream &
 {
-    ostream << "Job id: " << job.id << " cron: " << job.cron << " next run: " << job.get_next_run();
+    ostream << "Job ID: " << job.id << ", Schedule: " << job.cron << ", Next run: " << job.get_next_run();
     return ostream;
 }
